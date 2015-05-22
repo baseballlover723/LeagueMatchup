@@ -14,6 +14,9 @@
 
 	$query = "CALL getAvgSoloStats('$champ1', '$champ2', '$lane')";
 	$result = mysqli_query($con, $query);
+	if (!$result) {
+		echo mysqli_error($con);
+	}
 //	$returnArray = [];
 //	$row = mysqli_fetch_array($result)[0];
 //		for ($k = 0; $k < count($row); $k++) {

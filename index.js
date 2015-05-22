@@ -39,7 +39,6 @@ function initComboBox() {
             console.log("Error getting adc ids " + XMLHTTPRequest.responseText);
         },
         success: function (ajax, textStatus, XMLHTTPRequest) {
-            console.log(ajax);
             var champions = [{text: "???", value: "-1"}];
             for (var name in ajax) {
                 var id = ajax[name];
@@ -122,6 +121,10 @@ function changeLane() {
         var statLine = $("#champ" + k + "StatsLine");
         statLine.empty();
     }
+    // clear counter scores
+    $("#counter-score").text("");
+
+    // clear and rebuild item tables
     var itemTable = $("#item-results-table");
     itemTable.empty();
 
@@ -169,7 +172,7 @@ function changeLane() {
     $("#numbOfMatches").text("");
 
     var selector = $("#lane-selector");
-    console.log("switched lane to " + selector.val());
+    //console.log("switched lane to " + selector.val());
 
     // changes stat lines
     if (selector.val() == "bot") {
@@ -234,15 +237,13 @@ function getSoloStats() {
         return;
     }
     if (champId1 == "-1") {
-        getSoloCounters(champId2);
+        $("#analyzeError").text("calculating counters for a champ is not yet implemented");
+        //getSoloCounters(champId2);
         return;
     }
-    console.log(champId1);
-    console.log(champId2);
-    console.log(lane);
     var swap = false;
     if (champId2 < champId1) {
-        console.log("swap");
+        //console.log("swap");
         var temp = champId1;
         champId1 = champId2;
         champId2 = temp;
@@ -269,7 +270,6 @@ function getSoloStats() {
             console.log("Error getting solo stats items " + XMLHTTPRequest.responseText);
         },
         success: function (ajax, textStatus, XMLHTTPRequest) {
-            console.log(ajax);
             displayItemResults(ajax[1], parseFloat(ajax[0]));
         }
     });
@@ -280,26 +280,36 @@ function getBotStats() {
     var champIdS1 = parseInt($("#inputChampS1").val());
     var champIdM2 = parseInt($("#inputChampM2").val());
     var champIdS2 = parseInt($("#inputChampS2").val());
-    console.log(champIdM1);
-    console.log(champIdS1);
-    console.log("");
-    console.log(champIdM2);
-    console.log(champIdS2);
+    //console.log(champIdM1);
+    //console.log(champIdS1);
+    //console.log("");
+    //console.log(champIdM2);
+    //console.log(champIdS2);
 
+    var calcItems = true;
     var isADC = $('input[name="isADC"]:checked').val();
     if (isADC === undefined) {
-        $("#analyzeError").text("Please select if you are the Marksman or the Support");
-        return;
+        $("#analyzeError").text("Please select if you are the Marksman or the Support if you want to get an item analyses");
+        calcItems = false;
     }
-    isADC = isADC == "true";
-    if (champIdM1 == champIdM2) {
-        $("#analyzeError").text("Cannot compute mirror marksmen accurately");
-        return;
+    if (calcItems) {
+        isADC = isADC == "true";
+        if (isADC) {
+            if (champIdM1 == champIdM2) {
+                $("#analyzeError").text("Cannot compute mirror marksmen items accurately");
+                calcItems = false;
+            }
+        } else {
+            if (champIdS1 == champIdS2) {
+                $("#analyzeError").text("Cannot compute mirror supports items accurately");
+                calcItems = false;
+            }
+        }
     }
 
     var swap = false;
     if (champIdM2 < champIdM1) {
-        console.log("swap");
+        //console.log("swap");
         var tempM = champIdM1;
         var tempS = champIdS1;
 
@@ -322,18 +332,28 @@ function getBotStats() {
             displayStatsLine(ajax, swap, true);
         }
     });
-    var champ1 = (isADC?champIdM1:champIdS1);
-    var champ2 = (isADC?champIdM2:champIdS2);
+    if (!calcItems) {
+        hide("#item-results");
+        hide("#bad-item-results");
+        return;
+    }
+    var champ1 = (isADC ? champIdM1 : champIdS1);
+    var champ2 = (isADC ? champIdM2 : champIdS2);
     $.ajax({
         type: "GET",
         url: "getBestItems.php",
         dataType: "json",
-        data: "champId1=" + champ1 + "&champId2=" + champ2 + "&lane=BOT&swap=" + swap+"&isADC="+isADC,
+        data: "champId1=" + champ1 + "&champId2=" + champ2 + "&lane=BOT&swap=" + swap + "&isADC=" + isADC,
         error: function (XMLHTTPRequest, textStatus, errorThrown) {
             console.log("Error getting bot stats items " + XMLHTTPRequest.responseText);
         },
         success: function (ajax, textStatus, XMLHTTPRequest) {
-            console.log(ajax);
+            if ($("#item-results").css("display") == "none") {
+                show("#item-results");
+            }
+            if ($("#bad-item-results").css("display") == "none") {
+                show("#bad-item-results");
+            }
             displayItemResults(ajax[1], parseFloat(ajax[0]));
         }
     });
@@ -341,7 +361,6 @@ function getBotStats() {
 }
 
 function displayItemResults(rows, lanerAvgScore) {
-    console.log(lanerAvgScore);
     var table = $("#item-results-table");
     var badTable = $("#bad-item-results-table");
     badTable.empty();
@@ -355,7 +374,6 @@ function displayItemResults(rows, lanerAvgScore) {
             continue;
         }
         if (score < 0) {
-            console.log("negitive");
             row = $("<tr></tr>");
 
             var data = $("<td></td>");
@@ -369,9 +387,10 @@ function displayItemResults(rows, lanerAvgScore) {
             data.append(wrapper);
             row.append(data);
 
-            var description = $("<td></td>");
-            description.append($(item[1]));
+            var description = document.createElement("td");
+            description.innerHTML = item[1];
             row.append(description);
+            description = $(description);
             //row.append($(item[1]).css("max-height", "130px"));
 
             data = $("<td></td>");
@@ -400,9 +419,12 @@ function displayItemResults(rows, lanerAvgScore) {
             data.append(wrapper);
             row.append(data);
 
-            var description = $("<td></td>");
-            description.append($(item[1]));
+
+            var description = document.createElement("td");
+            description.innerHTML = item[1];
+            //description.append($(item[1]));
             row.append(description);
+            description = $(description);
             //row.append($(item[1]).css("max-height", "130px"));
 
             data = $("<td></td>");
@@ -447,7 +469,6 @@ function displayStatsLine(stats, swap, bot) {
         $("#analyzeError").text("Not enough matches in the database to accurately compute (" + stats[0] + " matches)");
         return;
     }
-
     var first = swap ? (bot ? "3" : "2") : "1";
     var second = swap ? (bot ? "4" : "1") : "2";
 
@@ -465,10 +486,25 @@ function displayStatsLine(stats, swap, bot) {
         $("#champ1Label").text($("#inputChamp1").data("kendoComboBox").text() + " stats:");
         $("#champ2Label").text($("#inputChamp2").data("kendoComboBox").text() + " stats:");
     }
+
+    var botMod = bot ? 2 : 0;
+    if (bot) {
+        var counterScore1 = parseFloat(stats[swap ? 3 : 1]);
+        var counterScore2 = parseFloat(stats[swap ? 4 : 2]);
+        var counterScore3 = parseFloat(stats[swap ? 1 : 3]);
+        var counterScore4 = parseFloat(stats[swap ? 2 : 4]);
+        $("#counter-score").text((counterScore1 + counterScore2) - (counterScore3 + counterScore4));
+
+    } else {
+        var counterScore1 = parseFloat(stats[swap ? 2 : 1]);
+        var counterScore2 = parseFloat(stats[swap ? 1 : 2]);
+        $("#counter-score").text(counterScore1 - counterScore2);
+
+    }
+
     var statLine = $("#champ" + first + "StatsLine");
     statLine.empty();
-    //console.log(stats);
-    for (var index = 1; index < 10; index++) {
+    for (var index = 3 + botMod; index < 12 + botMod; index++) {
         var data = $("<td></td>");
         data.text(stats[index]);
         statLine.append(data);
@@ -477,16 +513,15 @@ function displayStatsLine(stats, swap, bot) {
 
     statLine = $("#champ" + second + "StatsLine");
     statLine.empty();
-    for (var index = 10; index < 19; index++) {
+    for (var index = 12 + botMod; index < 21 + botMod; index++) {
         var data = $("<td></td>");
         data.text(stats[index]);
         statLine.append(data);
     }
-
     if (bot) {
         statLine = $("#champ" + third + "StatsLine");
         statLine.empty();
-        for (var index = 19; index < 28; index++) {
+        for (var index = 23; index < 32; index++) {
             var data = $("<td></td>");
             data.text(stats[index]);
             statLine.append(data);
@@ -495,7 +530,7 @@ function displayStatsLine(stats, swap, bot) {
 
         statLine = $("#champ" + fourth + "StatsLine");
         statLine.empty();
-        for (var index = 28; index < 37; index++) {
+        for (var index = 32; index < 41; index++) {
             var data = $("<td></td>");
             data.text(stats[index]);
             statLine.append(data);
