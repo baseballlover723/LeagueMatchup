@@ -1,7 +1,6 @@
 "use strict";
 // TODO implement player hints
 // TODO display player hints
-// TODO display overall counter score based on previous matches
 var CHAMP_IMG_URL = "http://ddragon.leagueoflegends.com/cdn/5.9.1/img/champion/";
 var ITEM_IMG_URL = "http://ddragon.leagueoflegends.com/cdn/5.9.1/img/item/";
 var MATCH_MIN = 5;
@@ -200,6 +199,7 @@ function changeChampImage(id, name, champId) {
     var img = $("#img" + id);
     if (champId == -1) {
         img.attr("src", "http://upload.wikimedia.org/wikipedia/commons/2/25/Icon-round-Question_mark.jpg");
+        return;
     }
     $.ajax({
         type: "GET",

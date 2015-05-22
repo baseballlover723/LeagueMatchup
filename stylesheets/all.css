@@ -2,9 +2,9 @@ body {
     font-size: 12pt;
 }
 
-#lane-selector-box {
-    outline: solid green 2pt;
-}
+/*#lane-selector-box {*/
+    /*outline: solid green 2pt;*/
+/*}*/
 
 .button {
     /*clear: both;*/
@@ -70,12 +70,12 @@ body {
 .left {
     width: 33.3%;
     float: left;
-    outline: green solid 2pt;
+    /*outline: green solid 2pt;*/
 }
 
 .center {
     width: 33.3%;
-    outline: green solid 2pt;
+    /*outline: green solid 2pt;*/
     margin: auto;
 }
 
@@ -83,7 +83,7 @@ body {
     width: 33.3%;
     float: right;
     text-align: center;
-    outline: green solid 2pt;
+    /*outline: green solid 2pt;*/
 }
 
 .error {
