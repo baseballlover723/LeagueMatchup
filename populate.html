@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Leaguematchups by baseballlover723</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="stylesheets/all.css">
+    <link rel="stylesheet" href="stylesheets/populate.css">
+    <script src="populate.js"></script>
+<body>
+<div id="header">
+    <nav>
+        <li class="fork"><a href="index.php">Go Back to Index</a></li>
+        <li class="fork"><a href="https://github.com/baseballlover723/LeagueMatchups">View On GitHub</a></li>
+        <li class="downloads"><a href="https://github.com/baseballlover723/LeagueMatchups/zipball/master">ZIP</a></li>
+        <li class="downloads"><a href="https://github.com/baseballlover723/LeagueMatchups/tarball/master">TAR</a></li>
+        <li class="title">DOWNLOADS</li>
+    </nav>
+</div>
+<!-- end header -->'
+
+<div class="wrapper">
+    <section>
+        <a onclick="testInLane()" class='button'>Test in lane</a>
+        <div class="row">
+            <a onclick="addChamps()" class='button'>Populate Champs Database</a>
+            <a onclick="addItems()" class='button'>Populate Items Database</a>
+            <a id="matchUpButton" onclick="addMatchups()" class='button'>Populate Matchup Database</a>
+        </div>
+        <div id="stats" class="row">
+            <div class="left">
+                <p>Requests so far: <span id="requests">0</span></p>
+            </div>
+            <div class="right">
+                <p>Misses so far: <span id="misses">0</span></p>
+            </div>
+            <div class="center">
+                <p>Hits so far: <span id="hits">0</span></p>
+            </div>
+        </div>
+        <div id="errors">
+            Errors
+            <ul id="error-list">
+            </ul>
+        </div>
+        <!--[if !IE]>
+        <script>fixScale(document);</script><![endif]-->
+    </section>
+</div>
+</body>
+</html>
